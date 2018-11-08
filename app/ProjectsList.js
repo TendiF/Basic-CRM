@@ -7,9 +7,13 @@ import {
     Modal,
     TouchableHighlight,
     Alert,
+    TextInput,
+    TouchableOpacity,
+    Button,
+    DatePickerAndroid
 } from 'react-native';
-import { RkCard } from 'react-native-ui-kitten';
-import { Col, Row, Grid } from "react-native-easy-grid";
+import { widthScale, heightScale } from './utils/Scale';
+
 
 const styles = StyleSheet.create({
     contentContainer: {
@@ -17,6 +21,88 @@ const styles = StyleSheet.create({
         flex: 5
     }
 });
+const Input = (props) => {
+    return (
+        <View style={{
+            width: widthScale(0.8),
+            height: heightScale(0.08),
+            flexDirection: 'row',
+            marginTop: props.marginTop
+        }}>
+            <View style={{
+                flex: 1,
+                justifyContent: 'center',
+                paddingLeft: 15,
+                borderWidth: 1,
+                borderColor: '#bdc3c7',
+                borderTopWidth: !props.marginTop ? 0 : 1
+            }}>
+                <Text style={{ fontWeight: 'bold' }}>{props.label}</Text>
+            </View>
+            <View style={{
+                flex: 2,
+                justifyContent: 'center',
+                borderWidth: 1,
+                borderColor: '#bdc3c7',
+                borderLeftWidth: 0,
+                borderTopWidth: !props.marginTop ? 0 : 1
+            }}>
+                <TextInput
+                    style={{ paddingLeft: 15 }}
+                    placeholder={props.placeholder}
+                />
+            </View>
+        </View>
+    );
+}
+class NewProjectForm extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    async openUpPicker() {
+        try {
+            const { action, year, month, day } = await DatePickerAndroid.open({
+                date: new Date()
+            });
+
+            if (action == DatePickerAndroid.dateSetAction) {
+                console.warn(year + ' ' + month + ' ' + day);
+            }
+        } catch ({ code, message }) {
+            console.warn('Cannot open date picker', message);
+        }
+    }
+    render() {
+
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'stretch', }}>
+                <View style={{
+                    flex: 1,
+                    backgroundColor: 'gray',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    <Text>Create Project</Text>
+                </View>
+                <View style={{
+                    flex: 12,
+                    alignItems: 'center',
+                    paddingTop: 10
+                }}>
+                    <Input marginTop={15} label='Title' placeholder='Project Name' />
+                    <Input marginTop={15} label='Start Date' placeholder='Start Date' />
+                    <Input marginTop={0} label='End Date' placeholder='End Date' />
+                    <Text>Description  Project</Text>
+                    <Button
+                        onPress={() => {this.openUpPicker()}}
+                        title="Save"
+                    />
+                </View>
+            </View>
+        )
+    }
+}
 
 export default class Dashboard extends React.Component {
     constructor(props) {
@@ -42,6 +128,9 @@ export default class Dashboard extends React.Component {
                     return { modalAdd: !prev.modalAdd };
                 });
             }
+        }
+        const submitProject = () => {
+            console.warn('submit bro');
         }
         return (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', alignItems: 'stretch', }}>
@@ -125,7 +214,7 @@ export default class Dashboard extends React.Component {
                         onRequestClose={() => {
                             toggleModal('filter');
                         }}>
-                        <View style={{ marginTop: 22 }}>
+                        <View style={{ flex: 1, marginTop: 22 }}>
                             <View>
                                 <Text>Modal Filter</Text>
                             </View>
@@ -138,7 +227,7 @@ export default class Dashboard extends React.Component {
                         onRequestClose={() => {
                             toggleModal('sort');
                         }}>
-                        <View style={{ marginTop: 22 }}>
+                        <View style={{ flex: 1, marginTop: 22 }}>
                             <View>
                                 <Text>Modal Sort</Text>
                             </View>
@@ -151,10 +240,8 @@ export default class Dashboard extends React.Component {
                         onRequestClose={() => {
                             toggleModal('add');
                         }}>
-                        <View style={{ marginTop: 22 }}>
-                            <View>
-                                <Text>Modal Add</Text>
-                            </View>
+                        <View style={{ flex: 1, marginTop: 22 }}>
+                            <NewProjectForm />
                         </View>
                     </Modal>
                 </View>
