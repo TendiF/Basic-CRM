@@ -50,6 +50,11 @@ const Input = (props) => {
                 <TextInput
                     style={{ paddingLeft: 15 }}
                     placeholder={props.placeholder}
+                    value={props.value}
+                    onChangeText={(input) =>{
+                        props.onChange(input);
+                    }}
+                    onFocus={props.onFocus}
                 />
             </View>
         </View>
@@ -58,21 +63,32 @@ const Input = (props) => {
 class NewProjectForm extends React.Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            title: null,
+            start_date: null,
+            end_date: null
+        }
     }
 
-    async openUpPicker() {
+    async openDatePicker(inputValue) {
         try {
             const { action, year, month, day } = await DatePickerAndroid.open({
                 date: new Date()
             });
 
             if (action == DatePickerAndroid.dateSetAction) {
-                console.warn(year + ' ' + month + ' ' + day);
+                if(inputValue == 'start_date'){
+                    this.setState({start_date : year + ' ' + month + ' ' + day})
+                }else if(inputValue == 'end_date'){
+                    this.setState({end_date : year + ' ' + month + ' ' + day})
+                }
             }
         } catch ({ code, message }) {
             console.warn('Cannot open date picker', message);
         }
     }
+
     render() {
 
         return (
@@ -90,14 +106,34 @@ class NewProjectForm extends React.Component {
                     alignItems: 'center',
                     paddingTop: 10
                 }}>
-                    <Input marginTop={15} label='Title' placeholder='Project Name' />
-                    <Input marginTop={15} label='Start Date' placeholder='Start Date' />
-                    <Input marginTop={0} label='End Date' placeholder='End Date' />
+                    <Input 
+                        marginTop={15}
+                        label='Title'
+                        placeholder='Project Name'
+                        value={this.state.title} 
+                        onChange={(input)=>{
+                            this.setState({title : input});
+                        }}
+                        />
+                    <Input 
+                        marginTop={15} 
+                        label='Start Date' 
+                        placeholder='Start Date' 
+                        value={this.state.start_date}
+                        onFocus={()=>{
+                            this.openDatePicker('start_date');
+                        }}
+                        />
+                    <Input 
+                        marginTop={0} 
+                        label='End Date' 
+                        placeholder='End Date'
+                        value={this.state.end_date}
+                        onFocus={()=>{
+                            this.openDatePicker('end_date');
+                        }}
+                        />
                     <Text>Description  Project</Text>
-                    <Button
-                        onPress={() => {this.openUpPicker()}}
-                        title="Save"
-                    />
                 </View>
             </View>
         )
