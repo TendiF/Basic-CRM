@@ -10,7 +10,8 @@ import {
     TextInput,
     TouchableOpacity,
     Button,
-    DatePickerAndroid
+    DatePickerAndroid,
+    RefreshControl
 } from 'react-native';
 import { widthScale, heightScale } from './utils/Scale';
 
@@ -21,6 +22,7 @@ const styles = StyleSheet.create({
         flex: 5
     }
 });
+
 const Input = (props) => {
     return (
         <View style={{
@@ -51,15 +53,27 @@ const Input = (props) => {
                     style={{ paddingLeft: 15 }}
                     placeholder={props.placeholder}
                     value={props.value}
-                    onChangeText={(input) =>{
+                    onChangeText={(input) => {
                         props.onChange(input);
                     }}
                     onFocus={props.onFocus}
+                    editable={props.editable}
                 />
             </View>
         </View>
     );
 }
+
+const ButtonIcon = (props) => {
+    return(
+        <TouchableOpacity>
+            <View>
+                <Text>Button</Text>
+            </View>
+        </TouchableOpacity>
+    )
+}
+
 class NewProjectForm extends React.Component {
     constructor(props) {
         super(props);
@@ -78,10 +92,10 @@ class NewProjectForm extends React.Component {
             });
 
             if (action == DatePickerAndroid.dateSetAction) {
-                if(inputValue == 'start_date'){
-                    this.setState({start_date : year + ' ' + month + ' ' + day})
-                }else if(inputValue == 'end_date'){
-                    this.setState({end_date : year + ' ' + month + ' ' + day})
+                if (inputValue == 'start_date') {
+                    this.setState({ start_date: year + ' ' + month + ' ' + day })
+                } else if (inputValue == 'end_date') {
+                    this.setState({ end_date: year + ' ' + month + ' ' + day })
                 }
             }
         } catch ({ code, message }) {
@@ -90,53 +104,111 @@ class NewProjectForm extends React.Component {
     }
 
     render() {
-
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'stretch', }}>
                 <View style={{
                     flex: 1,
-                    backgroundColor: 'gray',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
                 }}>
                     <Text>Create Project</Text>
                 </View>
                 <View style={{
                     flex: 12,
                     alignItems: 'center',
-                    paddingTop: 10
+                    paddingTop: 10,
+
                 }}>
-                    <Input 
-                        marginTop={15}
-                        label='Title'
-                        placeholder='Project Name'
-                        value={this.state.title} 
-                        onChange={(input)=>{
-                            this.setState({title : input});
-                        }}
+                    <ScrollView>
+                        <Input
+                            marginTop={15}
+                            label='Title'
+                            placeholder='Project Name'
+                            value={this.state.title}
+                            onChange={(input) => {
+                                this.setState({ title: input });
+                            }}
                         />
-                    <Input 
-                        marginTop={15} 
-                        label='Start Date' 
-                        placeholder='Start Date' 
-                        value={this.state.start_date}
-                        onFocus={()=>{
-                            this.openDatePicker('start_date');
-                        }}
-                        />
-                    <Input 
-                        marginTop={0} 
-                        label='End Date' 
-                        placeholder='End Date'
-                        value={this.state.end_date}
-                        onFocus={()=>{
-                            this.openDatePicker('end_date');
-                        }}
-                        />
-                    <Text>Description  Project</Text>
+                        <TouchableOpacity
+                            onPress={() => {
+                                this.openDatePicker('start_date');
+
+                            }}
+                        >
+                            <Input
+                                marginTop={15}
+                                label='Start Date'
+                                placeholder='Start Date'
+                                value={this.state.start_date}
+                                onFocus={() => {
+                                }}
+                                editable={false}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => {
+                                this.openDatePicker('end_date');
+                            }}
+                        >
+                            <Input
+                                marginTop={0}
+                                label='End Date'
+                                placeholder='End Date'
+                                value={this.state.end_date}
+                                editable={false}
+                            />
+                        </TouchableOpacity>
+                        <View style={{ flex: 1, marginTop: 15 }}>
+                            <Text style={{ fontWeight: 'bold' }} >Description </Text>
+                            <TextInput
+                                style={{
+                                    width: widthScale(0.8),
+                                    height: heightScale(0.20),
+                                    borderWidth: 1,
+                                    borderColor: '#bdc3c7',
+                                    textAlignVertical: 'top'
+                                }}
+                                multiline={true}
+                                numberOfLines={4}
+                            >
+                            </TextInput>
+                        </View>
+                        <View style={{ marginTop: 15 }}>
+                            <Button
+                                title="Submit" />
+                        </View>
+                    </ScrollView>
                 </View>
             </View>
         )
+    }
+}
+
+class FormFilterSort extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        return (
+            <View
+                style={{
+                    flex: 1,
+                    alignContent: 'stretch'
+                }}
+            >
+                <Text>Modal Filter</Text>
+
+                <View
+                    style={{ flex: 1, backgroundColor : '#95a5a6' }}
+                >
+
+                </View>
+                <Text>End Date</Text>
+                <Text>Time Left</Text>
+                <Text>Task</Text>
+                <Text>Project Status</Text>
+            </View>
+        );
     }
 }
 
@@ -144,20 +216,16 @@ export default class Dashboard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            modalFilter: false,
-            modalSort: false,
-            modalAdd: false
+            modalFilterSort: false,
+            modalAdd: false,
+            refresh: false
         }
     }
     render() {
         const toggleModal = (type) => {
-            if (type == 'filter') {
+            if (type == 'filterSort') {
                 this.setState((prev) => {
-                    return { modalFilter: !prev.modalFilter };
-                });
-            } else if (type == 'sort') {
-                this.setState((prev) => {
-                    return { modalSort: !prev.modalSort };
+                    return { modalFilterSort: !prev.modalFilterSort };
                 });
             } else if (type == 'add') {
                 this.setState((prev) => {
@@ -165,11 +233,8 @@ export default class Dashboard extends React.Component {
                 });
             }
         }
-        const submitProject = () => {
-            console.warn('submit bro');
-        }
         return (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', alignItems: 'stretch', }}>
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', alignItems: 'stretch' }}>
                 <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                     <Text>List Project</Text>
                 </View>
@@ -180,6 +245,19 @@ export default class Dashboard extends React.Component {
                             var direction = currentOffset > this.offset ? 'down' : 'up';
                             this.offset = currentOffset;
                         }}
+
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={this.state.refresh}
+                                onRefresh={() => {
+                                    // Basic Implement Refresh Tool
+                                    this.setState({ refresh: true });
+                                    setInterval(() => {
+                                        this.setState({ refresh: false });
+                                    }, 3000);
+                                }}
+                            />
+                        }
                     >
                         {[1, 2, 3, 4].map(() => {
                             return (
@@ -221,19 +299,11 @@ export default class Dashboard extends React.Component {
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'stretch' }}>
                     <TouchableHighlight
                         onPress={() => {
-                            toggleModal('filter');
+                            toggleModal('filterSort');
                         }}
                         underlayColor="#ecf0f1"
                         style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                        <Text>Filter</Text>
-                    </TouchableHighlight>
-                    <TouchableHighlight
-                        onPress={() => {
-                            toggleModal('sort');
-                        }}
-                        underlayColor="#ecf0f1"
-                        style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                        <Text>Short</Text>
+                        <Text>Filter & Sort</Text>
                     </TouchableHighlight>
                     <TouchableHighlight
                         onPress={() => {
@@ -244,33 +314,18 @@ export default class Dashboard extends React.Component {
                         <Text>Add</Text>
                     </TouchableHighlight>
                     <Modal
-                        animationType="slide"
+                        animationType="fade"
                         transparent={false}
-                        visible={this.state.modalFilter}
+                        visible={this.state.modalFilterSort}
                         onRequestClose={() => {
-                            toggleModal('filter');
+                            toggleModal('filterSort');
                         }}>
                         <View style={{ flex: 1, marginTop: 22 }}>
-                            <View>
-                                <Text>Modal Filter</Text>
-                            </View>
+                            <FormFilterSort />
                         </View>
                     </Modal>
                     <Modal
-                        animationType="slide"
-                        transparent={false}
-                        visible={this.state.modalSort}
-                        onRequestClose={() => {
-                            toggleModal('sort');
-                        }}>
-                        <View style={{ flex: 1, marginTop: 22 }}>
-                            <View>
-                                <Text>Modal Sort</Text>
-                            </View>
-                        </View>
-                    </Modal>
-                    <Modal
-                        animationType="slide"
+                        animationType="fade"
                         transparent={false}
                         visible={this.state.modalAdd}
                         onRequestClose={() => {
