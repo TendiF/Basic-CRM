@@ -8,13 +8,16 @@ import {
     TouchableHighlight,
     Alert,
     TextInput,
+    TouchableNativeFeedback,
     TouchableOpacity,
     Button,
     DatePickerAndroid,
     RefreshControl
 } from 'react-native';
-import { widthScale, heightScale } from './utils/Scale';
 
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+import { widthScale, heightScale } from './utils/Scale';
 
 const styles = StyleSheet.create({
     contentContainer: {
@@ -66,11 +69,14 @@ const Input = (props) => {
 
 const ButtonIcon = (props) => {
     return(
-        <TouchableOpacity>
-            <View>
-                <Text>Button</Text>
+        <TouchableNativeFeedback>
+        <View style={{ height:props.height, width: props.width, backgroundColor : props.color}}>
+            <View style={{flex : 1, flexDirection : "row-reverse", alignItems:'center'}}>
+                <Icon style={{flex : 1}} name={props.iconName} size={props.sizeIcon} color="#ffffff" />
+                <Text style={{flex : 3, color:"#ffffff", paddingLeft: 15}} >{props.title}</Text>
             </View>
-        </TouchableOpacity>
+        </View> 
+        </TouchableNativeFeedback>
     )
 }
 
@@ -129,7 +135,7 @@ class NewProjectForm extends React.Component {
                                 this.setState({ title: input });
                             }}
                         />
-                        <TouchableOpacity
+                        <TouchableNativeFeedback
                             onPress={() => {
                                 this.openDatePicker('start_date');
 
@@ -144,8 +150,8 @@ class NewProjectForm extends React.Component {
                                 }}
                                 editable={false}
                             />
-                        </TouchableOpacity>
-                        <TouchableOpacity
+                        </TouchableNativeFeedback>
+                        <TouchableNativeFeedback
                             onPress={() => {
                                 this.openDatePicker('end_date');
                             }}
@@ -157,7 +163,7 @@ class NewProjectForm extends React.Component {
                                 value={this.state.end_date}
                                 editable={false}
                             />
-                        </TouchableOpacity>
+                        </TouchableNativeFeedback>
                         <View style={{ flex: 1, marginTop: 15 }}>
                             <Text style={{ fontWeight: 'bold' }} >Description </Text>
                             <TextInput
@@ -184,9 +190,17 @@ class NewProjectForm extends React.Component {
     }
 }
 
-class FormFilterSort extends React.Component {
+export default class FormFilterSort extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            filter : {
+                start_date : null,
+                end_date : null,
+                task : null ,
+                status : null
+            }
+        }
     }
     render() {
         return (
@@ -199,9 +213,10 @@ class FormFilterSort extends React.Component {
                 <Text>Modal Filter</Text>
 
                 <View
-                    style={{ flex: 1, backgroundColor : '#95a5a6' }}
+                    style={{ flex:1, flexDirection:'row', justifyContent:'center' }}
                 >
-
+                    <ButtonIcon color="#3498db" title="START DATE" iconName="sort-down" width={widthScale(0.34)} height={heightScale(0.065)} sizeIcon={20}/>
+                    <ButtonIcon color="#3498db" title="START DATE" iconName="sort-down" width={widthScale(0.34)} height={heightScale(0.065)} sizeIcon={20}/>
                 </View>
                 <Text>End Date</Text>
                 <Text>Time Left</Text>
@@ -212,7 +227,7 @@ class FormFilterSort extends React.Component {
     }
 }
 
-export default class Dashboard extends React.Component {
+ class Dashboard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
