@@ -190,7 +190,7 @@ class NewProjectForm extends React.Component {
     }
 }
 
-export default class FormFilterSort extends React.Component {
+class FormFilterSort extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -227,7 +227,7 @@ export default class FormFilterSort extends React.Component {
     }
 }
 
- class Dashboard extends React.Component {
+ export default class Dashboard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {

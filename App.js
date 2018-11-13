@@ -26,7 +26,7 @@ const MainStack =  StackNavigator(
     }
   },
   {
-    initialRouteName: 'ProjectsList',
+    initialRouteName: 'Home',
     headerMode: 'none',
   }
 );

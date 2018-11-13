@@ -8,7 +8,7 @@ export default class DetailsScreen extends React.Component {
         <Text>Details Screen</Text>
         <Button
           title="Go back"
-          onPress={() => this.props.navigation.goBack()}
+          onPress={() => this.props.navigation.navigate('ProjectsList')}
         />
       </View>
     );
